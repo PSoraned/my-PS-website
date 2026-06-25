@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CADES - CAnine DEmentia Scale</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header .dog-icon {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            color: #4a2f7a;
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .header h2 {
+            color: #764ba2;
+            font-size: 1.1em;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .section-title h3 {
+            color: #4a2f7a;
+            font-size: 1.2em;
+        }
+
+        .section-title p {
+            color: #888;
+            font-size: 0.85em;
+        }
+
+        /* Score Scale Info */
+        .scale-info {
+            background: #f8f5ff;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-size: 0.82em;
+            color: #666;
+        }
+
+        .scale-info .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .scale-labels span {
+            background: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 0.9em;
+        }
+
+        /* Question */
+        .question-card {
+            background: #fafafa;
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border: 2px solid #f0f0f0;
+            transition: border-color 0.3s;
+        }
+
+        .question-card.answered {
+            border-color: #764ba2;
+            background: #f8f5ff;
+        }
+
+        .question-text {
+            color: #333;
+            font-size: 0.95em;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .question-text-th {
+            color: #555;
+            font-size: 0.85em;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        /* Radio Buttons */
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .option-label {
+            flex: 1;
+            min-width: 80px;
+            cursor: pointer;
+        }
+
+        .option-label input[type="radio"] {
+            display: none;
+        }
+
+        .option-btn {
+            display: block;
+            text-align: center;
+            padding: 10px 8px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            font-size: 0.78em;
+            color: #555;
+            transition: all 0.2s ease;
+            background: white;
+            line-height: 1.3;
+        }
+
+        .option-btn .score {
+            display: block;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 3px;
+        }
+
+        .option-label input[type="radio"]:checked + .option-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #764ba2;
+        }
+
+        .option-label input[type="radio"]:checked + .option-btn .score {
+            color: white;
+        }
+
+        .option-btn:hover {
+            border-color: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-prev {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        .btn-prev:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-next:disabled {
+            background: #cccccc;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Dog Info Form */
+        .dog-info-form {
+            display: grid;
+            gap: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #555;
+            font-size: 0.9em;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+            color: #333;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Result Section */
+        .result-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        .result-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-icon {
+            font-size: 70px;
+            margin-bottom: 15px;
+        }
+
+        .result-dog-name {
+            color: #888;
+            font-size: 1em;
+            margin-bottom: 5px;
+        }
+
+        .total-score {
+            font-size: 4em;
+            font-weight: bold;
+            color: #4a2f7a;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .total-score-label {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .result-badge {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: white;
+        }
+
+        .result-badge.normal { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .result-badge.mild { background: linear-gradient(135deg, #f7971e, #ffd200); }
+        .result-badge.moderate { background: linear-gradient(135deg, #ff6b6b, #ee0979); }
+        .result-badge.severe { background: linear-gradient(135deg, #2c3e50, #e74c3c); }
+
+        .result-description {
+            background: #f8f5ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .result-description h4 {
+            color: #4a2f7a;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        /* Score Breakdown */
+        .score-breakdown {
+            background: #f8f5ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .score-breakdown h4 {
+            color: #4a2f7a;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e8e0f5;
+        }
+
+        .score-item:last-child {
+            border-bottom: none;
+        }
+
+        .score-item-label {
+            color: #555;
+            font-size: 0.9em;
+        }
+
+        .score-item-bar {
+            flex: 1;
+            margin: 0 15px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .score-item-fill {
+            height: 100%;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .score-item-value {
+            color: #4a2f7a;
+            font-weight: bold;
+            font-size: 0.9em;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        /* Clinical Stages Legend */
+        .stages-legend {
+            background: #f8f5ff;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .stages-legend h4 {
+            color: #4a2f7a;
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+
+        .stage-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 0.85em;
+            color: #555;
+        }
+
+        .stage-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .stage-dot.normal { background: #43e97b; }
+        .stage-dot.mild { background: #f7971e; }
+        .stage-dot.moderate { background: #ee0979; }
+        .stage-dot.severe { background: #e74c3c; }
+
+        .stage-item.current {
+            font-weight: bold;
+            color: #4a2f7a;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-print {
+            background: #f0f0f0;
+            color: #555;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.8em;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* Alert */
+        .alert {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+            color: #856404;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        /* Welcome Screen */
+        .welcome-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .welcome-section h3 {
+            color: #4a2f7a;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-size: 0.88em;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-box ul li {
+            padding: 4px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .info-box ul li::before {
+            content: "🐾";
+            position: absolute;
+            left: 0;
+            font-size: 0.9em;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .nav-buttons,
+            .action-buttons,
+            .progress-container,
+            .header .dog-icon,
+            .footer {
+                display: none;
+            }
+
+            .result-section {
+                display: block !important;
+                box-shadow: none;
+                padding: 20px;
+            }
+
+            .section, .welcome-section {
+                display: none !important;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.4em;
+            }
+
+            .options {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .option-btn {
+                padding: 8px 4px;
+                font-size: 0.72em;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .total-score {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div class="dog-icon">🐕</div>
+        <h1>CADES</h1>
+        <h2>CAnine DEmentia Scale</h2>
+        <p>Cognitive Function Score Assessment</p>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container" id="progressContainer">
+        <div class="progress-label">
+            <span id="progressText">ขั้นตอนที่ 1 จาก 6</span>
+            <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <!-- STEP 0: Welcome -->
+    <div class="welcome-section section active" id="step0">
+        <h3>📋 เกี่ยวกับแบบทดสอบนี้</h3>
+        <div class="info-box">
+            <p>แบบทดสอบนี้ใช้สำหรับประเมินความบกพร่องทางสมองในสุนัข (Canine Cognitive Dysfunction) โดยอ้างอิงจาก <strong>CAnine DEmentia Scale (CADES)</strong></p>
+            <br>
+            <p><strong>ผู้ตอบแบบทดสอบควรสังเกตพฤติกรรมของสุนัขอย่างน้อย 6 เดือนก่อนตอบ</strong></p>
+        </div>
+        <div class="info-box">
+            <strong>หมวดหมู่การประเมิน:</strong>
+            <ul>
+                <li>A. การรับรู้ทิศทางในพื้นที่ (Spatial orientation) - 5 ข้อ</li>
+                <li>B. ปฏิสัมพันธ์ทางสังคม (Social interaction) - 5 ข้อ</li>
+                <li>C. การขับถ่าย (House soiling) - 5 ข้อ</li>
+                <li>D. วงจรการนอน-ตื่น (Sleep-wake cycles) - 2 ข้อ</li>
+            </ul>
+        </div>
+        <div class="info-box">
+            <strong>ระดับคะแนน (คะแนนรวมสูงสุด 95 คะแนน):</strong>
+            <ul>
+                <li>0–7 คะแนน: ปกติตามอายุ (Normal ageing)</li>
+                <li>8–23 คะแนน: ความบกพร่องระดับน้อย (Mild)</li>
+                <li>24–44 คะแนน: ความบกพร่องระดับปานกลาง (Moderate)</li>
+                <li>45–95 คะแนน: ความบกพร่องระดับรุนแรง (Severe)</li>
+            </ul>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-next" onclick="goToStep(1)">เริ่มต้น →</button>
+        </div>
+    </div>
+
+    <!-- STEP 1: Dog Info -->
+    <div class="section" id="step1">
+        <div class="section-header">
+            <div class="section-badge">🐾</div>
+            <div class="section-title">
+                <h3>ข้อมูลสุนัข</h3>
+                <p>กรุณากรอกข้อมูลเบื้องต้น</p>
+            </div>
+        </div>
+        <div class="dog-info-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ชื่อสุนัข</label>
+                    <input type="text" id="dogName" placeholder="เช่น บัดดี้" />
+                </div>
+                <div class="form-group">
+                    <label>สายพันธุ์</label>
+                    <input type="text" id="dogBreed" placeholder="เช่น โกลเด้น รีทรีฟเวอร์" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>อายุ (ปี)</label>
+                    <input type="number" id="dogAge" placeholder="เช่น 10" min="0" max="30" />
+                </div>
+                <div class="form-group">
+                    <label>เพศ</label>
+                    <select id="dogSex">
+                        <option value="">-- เลือก --</option>
+                        <option value="ตัวผู้">ตัวผู้</option>
+                        <option value="ตัวเมีย">ตัวเมีย</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>ชื่อเจ้าของ / ผู้ตอบแบบสอบถาม</label>
+                <input type="text" id="ownerName" placeholder="ชื่อเจ้าของ" />
+            </div>
+            <div class="form-group">
+                <label>วันที่ประเมิน</label>
+                <input type="date" id="assessDate" />
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-prev" onclick="goToStep(0)">← ย้อนกลับ</button>
+            <button class="btn btn-next" onclick="goToStep(2)">ถัดไป →</button>
+        </div>
+    </div>
+
+    <!-- STEP 2: Section A - Spatial Orientation -->
+    <div class="section" id="step2">
+        <div class="section-header">
+            <div class="section-badge">A</div>
+            <div class="section-title">
+                <h3>A. การรับรู้ทิศทางในพื้นที่</h3>
+                <p>Spatial Orientation — คะแนนสูงสุด 25 คะแนน</p>
+            </div>
+        </div>
+
+        <div class="scale-info">
+            <strong>เกณฑ์การให้คะแนน:</strong>
+            <div class="scale-labels">
+                <span>0 = ไม่เคยพบ</span>
+                <span>2 = อย่างน้อย 1 ครั้ง/6 เดือน</span>
+                <span>3 = อย่างน้อย 1 ครั้ง/เดือน</span>
+                <span>4 = หลายครั้ง/เดือน</span>
+                <span>5 = หลายครั้ง/สัปดาห์</span>
+            </div>
+        </div>
+
+        <div class="alert" id="alertA">⚠️ กรุณาตอบคำถามให้ครบทุกข้อก่อนดำเนินการต่อ</div>
+
+        <!-- A1 -->
+        <div class="question-card" id="qA1">
+            <div class="question-text">1. สับสน/สูญเสียทิศทางในสถานที่คุ้นเคย (ทั้งภายในและภายนอกบ้าน)</div>
+            <div class="question-text-th">Disorientation in a familiar environment (inside/outside)</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="A1" value="0" onchange="updateAnswer('A1', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A1" value="2" onchange="updateAnswer('A1', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A1" value="3" onchange="updateAnswer('A1', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A1" value="4" onchange="updateAnswer('A1', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A1" value="5" onchange="updateAnswer('A1', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- A2 -->
+        <div class="question-card" id="qA2">
+            <div class="question-text">2. ไม่จำคนหรือสัตว์ที่คุ้นเคยทั้งในและนอกบ้าน</div>
+            <div class="question-text-th">Failure to recognise familiar people and animals inside or outside</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="A2" value="0" onchange="updateAnswer('A2', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A2" value="2" onchange="updateAnswer('A2', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A2" value="3" onchange="updateAnswer('A2', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A2" value="4" onchange="updateAnswer('A2', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A2" value="5" onchange="updateAnswer('A2', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- A3 -->
+        <div class="question-card" id="qA3">
+            <div class="question-text">3. ตอบสนองผิดปกติต่อสิ่งของที่คุ้นเคย (เช่น เก้าอี้, ถังขยะ)</div>
+            <div class="question-text-th">Abnormally respond to familiar objects (a chair, a wastebasket)</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="A3" value="0" onchange="updateAnswer('A3', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A3" value="2" onchange="updateAnswer('A3', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A3" value="3" onchange="updateAnswer('A3', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A3" value="4" onchange="updateAnswer('A3', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A3" value="5" onchange="updateAnswer('A3', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- A4 -->
+        <div class="question-card" id="qA4">
+            <div class="question-text">4. เดินวนเวียนไร้จุดหมาย / กระสับกระส่ายตอนกลางวัน</div>
+            <div class="question-text-th">Aimlessly wandering (restless during day)</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="A4" value="0" onchange="updateAnswer('A4', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A4" value="2" onchange="updateAnswer('A4', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A4" value="3" onchange="updateAnswer('A4', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A4" value="4" onchange="updateAnswer('A4', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A4" value="5" onchange="updateAnswer('A4', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- A5 -->
+        <div class="question-card" id="qA5">
+            <div class="question-text">5. ความสามารถในการทำงานที่เคยเรียนรู้ไว้ลดลง</div>
+            <div class="question-text-th">Reduced ability to do previously learned task</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="A5" value="0" onchange="updateAnswer('A5', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A5" value="2" onchange="updateAnswer('A5', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A5" value="3" onchange="updateAnswer('A5', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A5" value="4" onchange="updateAnswer('A5', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="A5" value="5" onchange="updateAnswer('A5', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="btn btn-prev" onclick="goToStep(1)">← ย้อนกลับ</button>
+            <button class="btn btn-next" onclick="validateAndNext(2, 3, 'alertA', ['A1','A2','A3','A4','A5'])">ถัดไป →</button>
+        </div>
+    </div>
+
+    <!-- STEP 3: Section B - Social Interaction -->
+    <div class="section" id="step3">
+        <div class="section-header">
+            <div class="section-badge">B</div>
+            <div class="section-title">
+                <h3>B. ปฏิสัมพันธ์ทางสังคม</h3>
+                <p>Social Interaction — คะแนนสูงสุด 25 คะแนน</p>
+            </div>
+        </div>
+
+        <div class="scale-info">
+            <strong>เกณฑ์การให้คะแนน:</strong>
+            <div class="scale-labels">
+                <span>0 = ไม่เคยพบ</span>
+                <span>2 = อย่างน้อย 1 ครั้ง/6 เดือน</span>
+                <span>3 = อย่างน้อย 1 ครั้ง/เดือน</span>
+                <span>4 = หลายครั้ง/เดือน</span>
+                <span>5 = หลายครั้ง/สัปดาห์</span>
+            </div>
+        </div>
+
+        <div class="alert" id="alertB">⚠️ กรุณาตอบคำถามให้ครบทุกข้อก่อนดำเนินการต่อ</div>
+
+        <!-- B1 -->
+        <div class="question-card" id="qB1">
+            <div class="question-text">1. เปลี่ยนแปลงการมีปฏิสัมพันธ์กับคน/สุนัขอื่น (การเล่น, การต้อนรับ, การขอความสนใจมากขึ้น)</div>
+            <div class="question-text-th">Changes in interaction man/dog, dog/other dog (playing, petting, welcoming, increased reassurance seeking)</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="B1" value="0" onchange="updateAnswer('B1', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B1" value="2" onchange="updateAnswer('B1', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B1" value="3" onchange="updateAnswer('B1', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B1" value="4" onchange="updateAnswer('B1', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B1" value="5" onchange="updateAnswer('B1', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- B2 -->
+        <div class="question-card" id="qB2">
+            <div class="question-text">2. เปลี่ยนแปลงพฤติกรรมเฉพาะตัว (การสำรวจ, การเล่น, ประสิทธิภาพ)</div>
+            <div class="question-text-th">Changes in individual behaviour of dog (exploration behaviour, play, performance)</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="B2" value="0" onchange="updateAnswer('B2', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B2" value="2" onchange="updateAnswer('B2', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B2" value="3" onchange="updateAnswer('B2', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B2" value="4" onchange="updateAnswer('B2', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B2" value="5" onchange="updateAnswer('B2', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- B3 -->
+        <div class="question-card" id="qB3">
+            <div class="question-text">3. การตอบสนองต่อคำสั่งและความสามารถเรียนรู้งานใหม่ลดลง</div>
+            <div class="question-text-th">Response to commands and ability to learn new task</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="B3" value="0" onchange="updateAnswer('B3', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B3" value="2" onchange="updateAnswer('B3', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B3" value="3" onchange="updateAnswer('B3', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B3" value="4" onchange="updateAnswer('B3', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B3" value="5" onchange="updateAnswer('B3', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- B4 -->
+        <div class="question-card" id="qB4">
+            <div class="question-text">4. หงุดหงิดง่าย / วิตกกังวลเพิ่มขึ้น</div>
+            <div class="question-text-th">Irritable / increased anxiety</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="B4" value="0" onchange="updateAnswer('B4', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B4" value="2" onchange="updateAnswer('B4', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B4" value="3" onchange="updateAnswer('B4', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B4" value="4" onchange="updateAnswer('B4', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B4" value="5" onchange="updateAnswer('B4', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- B5 -->
+        <div class="question-card" id="qB5">
+            <div class="question-text">5. แสดงพฤติกรรมก้าวร้าว</div>
+            <div class="question-text-th">Expression of aggression</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="B5" value="0" onchange="updateAnswer('B5', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B5" value="2" onchange="updateAnswer('B5', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B5" value="3" onchange="updateAnswer('B5', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B5" value="4" onchange="updateAnswer('B5', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="B5" value="5" onchange="updateAnswer('B5', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="btn btn-prev" onclick="goToStep(2)">← ย้อนกลับ</button>
+            <button class="btn btn-next" onclick="validateAndNext(3, 4, 'alertB', ['B1','B2','B3','B4','B5'])">ถัดไป →</button>
+        </div>
+    </div>
+
+    <!-- STEP 4: Section C - House Soiling -->
+    <div class="section" id="step4">
+        <div class="section-header">
+            <div class="section-badge">C</div>
+            <div class="section-title">
+                <h3>C. การขับถ่าย</h3>
+                <p>House Soiling — คะแนนสูงสุด 25 คะแนน</p>
+            </div>
+        </div>
+
+        <div class="scale-info">
+            <strong>เกณฑ์การให้คะแนน:</strong>
+            <div class="scale-labels">
+                <span>0 = ไม่เคยพบ</span>
+                <span>2 = อย่างน้อย 1 ครั้ง/6 เดือน</span>
+                <span>3 = อย่างน้อย 1 ครั้ง/เดือน</span>
+                <span>4 = หลายครั้ง/เดือน</span>
+                <span>5 = หลายครั้ง/สัปดาห์</span>
+            </div>
+        </div>
+
+        <div class="alert" id="alertC">⚠️ กรุณาตอบคำถามให้ครบทุกข้อก่อนดำเนินการต่อ</div>
+
+        <!-- C1 -->
+        <div class="question-card" id="qC1">
+            <div class="question-text">1. ขับถ่ายในบ้านโดยไม่เลือกสถานที่</div>
+            <div class="question-text-th">Eliminate at home at random locations</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="C1" value="0" onchange="updateAnswer('C1', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C1" value="2" onchange="updateAnswer('C1', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C1" value="3" onchange="updateAnswer('C1', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C1" value="4" onchange="updateAnswer('C1', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C1" value="5" onchange="updateAnswer('C1', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- C2 -->
+        <div class="question-card" id="qC2">
+            <div class="question-text">2. ขับถ่ายในบริเวณที่นอนของตัวเอง</div>
+            <div class="question-text-th">Eliminate in its sleeping area</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="C2" value="0" onchange="updateAnswer('C2', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C2" value="2" onchange="updateAnswer('C2', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C2" value="3" onchange="updateAnswer('C2', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C2" value="4" onchange="updateAnswer('C2', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C2" value="5" onchange="updateAnswer('C2', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- C3 -->
+        <div class="question-card" id="qC3">
+            <div class="question-text">3. เปลี่ยนแปลงการส่งสัญญาณว่าต้องการขับถ่าย</div>
+            <div class="question-text-th">Changes in signalisation for elimination activity</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="C3" value="0" onchange="updateAnswer('C3', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C3" value="2" onchange="updateAnswer('C3', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C3" value="3" onchange="updateAnswer('C3', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C3" value="4" onchange="updateAnswer('C3', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C3" value="5" onchange="updateAnswer('C3', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- C4 -->
+        <div class="question-card" id="qC4">
+            <div class="question-text">4. ขับถ่ายในบ้านทั้งที่เพิ่งออกไปเดินเล่นข้างนอก</div>
+            <div class="question-text-th">Eliminate indoors after a recent walk outside</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="C4" value="0" onchange="updateAnswer('C4', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C4" value="2" onchange="updateAnswer('C4', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C4" value="3" onchange="updateAnswer('C4', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C4" value="4" onchange="updateAnswer('C4', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C4" value="5" onchange="updateAnswer('C4', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- C5 -->
+        <div class="question-card" id="qC5">
+            <div class="question-text">5. ขับถ่ายในสถานที่ผิดปกติ (เช่น บนพื้นปูน, บนหญ้า)</div>
+            <div class="question-text-th">Eliminate at uncommon locations (grass, concrete)</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="C5" value="0" onchange="updateAnswer('C5', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C5" value="2" onchange="updateAnswer('C5', 2)">
+                    <span class="option-btn"><span class="score">2</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C5" value="3" onchange="updateAnswer('C5', 3)">
+                    <span class="option-btn"><span class="score">3</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C5" value="4" onchange="updateAnswer('C5', 4)">
+                    <span class="option-btn"><span class="score">4</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="C5" value="5" onchange="updateAnswer('C5', 5)">
+                    <span class="option-btn"><span class="score">5</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="btn btn-prev" onclick="goToStep(3)">← ย้อนกลับ</button>
+            <button class="btn btn-next" onclick="validateAndNext(4, 5, 'alertC', ['C1','C2','C3','C4','C5'])">ถัดไป →</button>
+        </div>
+    </div>
+
+    <!-- STEP 5: Section D - Sleep-Wake Cycles -->
+    <div class="section" id="step5">
+        <div class="section-header">
+            <div class="section-badge">D</div>
+            <div class="section-title">
+                <h3>D. วงจรการนอน-ตื่น</h3>
+                <p>Sleep-Wake Cycles — คะแนนสูงสุด 20 คะแนน</p>
+            </div>
+        </div>
+
+        <div class="scale-info">
+            <strong>⚠️ เกณฑ์การให้คะแนนสำหรับหมวดนี้แตกต่างออกไป:</strong>
+            <div class="scale-labels">
+                <span>0 = ไม่เคยพบ</span>
+                <span>4 = อย่างน้อย 1 ครั้ง/6 เดือน</span>
+                <span>6 = อย่างน้อย 1 ครั้ง/เดือน</span>
+                <span>8 = หลายครั้ง/เดือน</span>
+                <span>10 = หลายครั้ง/สัปดาห์</span>
+            </div>
+        </div>
+
+        <div class="alert" id="alertD">⚠️ กรุณาตอบคำถามให้ครบทุกข้อก่อนดำเนินการต่อ</div>
+
+        <!-- D1 -->
+        <div class="question-card" id="qD1">
+            <div class="question-text">1. กิจกรรมผิดปกติในเวลากลางคืน (เดินวนเวียน, ร้องเสียงดัง, กระสับกระส่าย)</div>
+            <div class="question-text-th">Abnormal night time activity (wandering, vocalization, restless)</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="D1" value="0" onchange="updateAnswer('D1', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="D1" value="4" onchange="updateAnswer('D1', 4)">
+                    <span class="option-btn"><span class="score">4</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="D1" value="6" onchange="updateAnswer('D1', 6)">
+                    <span class="option-btn"><span class="score">6</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="D1" value="8" onchange="updateAnswer('D1', 8)">
+                    <span class="option-btn"><span class="score">8</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="D1" value="10" onchange="updateAnswer('D1', 10)">
+                    <span class="option-btn"><span class="score">10</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- D2 -->
+        <div class="question-card" id="qD2">
+            <div class="question-text">2. เปลี่ยนจากการนอนไม่หลับ (insomnia) ไปเป็นนอนหลับมากเกินไป (hypersomnia)</div>
+            <div class="question-text-th">Switch from insomnia to hypersomnia</div>
+            <div class="options">
+                <label class="option-label">
+                    <input type="radio" name="D2" value="0" onchange="updateAnswer('D2', 0)">
+                    <span class="option-btn"><span class="score">0</span>ไม่เคย</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="D2" value="4" onchange="updateAnswer('D2', 4)">
+                    <span class="option-btn"><span class="score">4</span>≥1/6เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="D2" value="6" onchange="updateAnswer('D2', 6)">
+                    <span class="option-btn"><span class="score">6</span>≥1/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="D2" value="8" onchange="updateAnswer('D2', 8)">
+                    <span class="option-btn"><span class="score">8</span>หลายครั้ง/เดือน</span>
+                </label>
+                <label class="option-label">
+                    <input type="radio" name="D2" value="10" onchange="updateAnswer('D2', 10)">
+                    <span class="option-btn"><span class="score">10</span>หลายครั้ง/สัปดาห์</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="nav-buttons">
+            <button class="btn btn-prev" onclick="goToStep(4)">← ย้อนกลับ</button>
+            <button class="btn btn-next" onclick="validateAndNext(5, 'result', 'alertD', ['D1','D2'])">ดูผลลัพธ์ 🎯</button>
+        </div>
+    </div>
+
+    <!-- Result Section -->
+    <div class="result-section" id="resultSection">
+        <div class="result-icon" id="resultIcon">🐶</div>
+        <div class="result-dog-name" id="resultDogName"></div>
+        <div class="total-score" id="totalScoreDisplay">0</div>
+        <div class="total-score-label">คะแนนรวม (จาก 95 คะแนน)</div>
+        <div class="result-badge" id="resultBadge">—</div>
+
+        <div class="result-description" id="resultDescription"></div>
+
+        <div class="score-breakdown">
+            <h4>📊 คะแนนแยกตามหมวดหมู่</h4>
+            <div class="score-item">
+                <div class="score-item-label">A. Spatial orientation</div>
+                <div class="score-item-bar">
+                    <div class="score-item-fill" id="barA"></div>
+                </div>
+                <div class="score-item-value" id="scoreA">0/25</div>
+            </div>
+            <div class="score-item">
+                <div class="score-item-label">B. Social interaction</div>
+                <div class="score-item-bar">
+                    <div class="score-item-fill" id="barB"></div>
+                </div>
+                <div class="score-item-value" id="scoreB">0/25</div>
+            </div>
+            <div class="score-item">
+                <div class="score-item-label">C. House soiling</div>
+                <div class="score-item-bar">
+                    <div class="score-item-fill" id="barC"></div>
+                </div>
+                <div class="score-item-value" id="scoreC">0/25</div>
+            </div>
+            <div class="score-item">
+                <div class="score-item-label">D. Sleep-wake cycles</div>
+                <div class="score-item-bar">
+                    <div class="score-item-fill" id="barD"></div>
+                </div>
+                <div class="score-item-value" id="scoreD">0/20</div>
+            </div>
+        </div>
+
+        <div class="stages-legend">
+            <h4>📈 เกณฑ์การแปลผลคะแนน</h4>
+            <div class="stage-item" id="stageNormal">
+                <div class="stage-dot normal"></div>
+                0–7 คะแนน: Normal ageing (ปกติตามอายุ)
+            </div>
+            <div class="stage-item" id="stageMild">
+                <div class="stage-dot mild"></div>
+                8–23 คะแนน: Mild Cognitive Impairment (ความบกพร่องระดับน้อย)
+            </div>
+            <div class="stage-item" id="stageModerate">
+                <div class="stage-dot moderate"></div>
+                24–44 คะแนน: Moderate Cognitive Impairment (ความบกพร่องระดับปานกลาง)
+            </div>
+            <div class="stage-item" id="stageSevere">
+                <div class="stage-dot severe"></div>
+                45–95 คะแนน: Severe Cognitive Impairment (ความบกพร่องระดับรุนแรง)
+            </div>
+        </div>
+
+        <div class="result-description">
+            <h4>📌 หมายเหตุ</h4>
+            <p>ผลการประเมินนี้เป็นเพียงการคัดกรองเบื้องต้นเท่านั้น ไม่สามารถใช้แทนการวินิจฉัยโดยสัตวแพทย์ได้ หากพบว่าสุนัขมีคะแนนในระดับ Mild ขึ้นไป ควรนำสุนัขไปพบสัตวแพทย์เพื่อรับการประเมินและรักษาที่เหมาะสม</p>
+            <br>
+            <p><em>Reference: Applied Animal Behaviour Science, Volume 171, October 2015, Pages 138-14. Clare Rusbridge 2026 ©</em></p>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-print btn-prev" onclick="window.print()">🖨️ พิมพ์ผล</button>
+            <button class="btn btn-restart btn-next" onclick="restartApp()">🔄 เริ่มใหม่</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>CADES - CAnine DEmentia Scale | Clare Rusbridge 2026 ©</p>
+        <p>Applied Animal Behaviour Science, Volume 171, October 2015</p>
+    </div>
+</div>
+
+<script>
+    // ============================================================
+    // STATE
+    // ============================================================
+    let answers = {};
+    let currentStep = 0;
+    const totalSteps = 6; // step 0-5 + result
+
+    // Set today's date
+    document.addEventListener('DOMContentLoaded', () => {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('assessDate').value = today;
+    });
+
+    // ============================================================
+    // NAVIGATION
+    // ============================================================
+    function goToStep(step) {
+        // Hide all sections
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById('resultSection').classList.remove('active');
+
+        if (step === 'result') {
+            showResult();
+            document.getElementById('progressContainer').style.display = 'none';
+        } else {
+            const el = document.getElementById('step' + step);
+            if (el) el.classList.add('active');
+            currentStep = step;
+            updateProgress(step);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    function updateProgress(step) {
+        const percent = Math.round((step / 5) * 100);
+        document.getElementById('progressFill').style.width = percent + '%';
+        document.getElementById('progressPercent').textContent = percent + '%';
+
+        const labels = [
+            'ข้อมูลเบื้องต้น',
+            'ข้อมูลสุนัข',
+            'A. Spatial orientation',
+            'B. Social interaction',
+            'C. House soiling',
+            'D. Sleep-wake cycles'
+        ];
+        document.getElementById('progressText').textContent = labels[step] || '';
+    }
+
+    // ============================================================
+    // ANSWER UPDATE
+    // ============================================================
+    function updateAnswer(questionId, value) {
+        answers[questionId] = parseInt(value);
+
+        // Visual feedback
+        const card = document.getElementById('q' + questionId);
+        if (card) card.classList.add('answered');
+    }
+
+    // ============================================================
+    // VALIDATION & NEXT
+    // ============================================================
+    function validateAndNext(currentSectionStep, nextStep, alertId, requiredQuestions) {
+        const unanswered = requiredQuestions.filter(q => answers[q] === undefined);
+
+        if (unanswered.length > 0) {
+            const alert = document.getElementById(alertId);
+            alert.classList.add('show');
+
+            // Highlight unanswered
+            unanswered.forEach(q => {
+                const card = document.getElementById('q' + q);
+                if (card) {
+                    card.style.borderColor = '#ff6b6b';
+                    card.style.background = '#fff5f5';
+                }
+            });
+
+            // Scroll to first unanswered
+            const firstUnanswered = document.getElementById('q' + unanswered[0]);
+            if (firstUnanswered) {
+                firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            setTimeout(() => {
+                alert.classList.remove('show');
+                unanswered.forEach(q => {
+                    const card = document.getElementById('q' + q);
+                    if (card) {
+                        card.style.borderColor = '';
+                        card.style.background = '';
+                    }
+                });
+            }, 3000);
+            return;
+        }
+
+        goToStep(nextStep);
+    }
+
+    // ============================================================
+    // CALCULATE SCORES
+    // ============================================================
+    function calculateScores() {
+        const scoreA = (answers['A1'] || 0) + (answers['A2'] || 0) + (answers['A3'] || 0) +
+                       (answers['A4'] || 0) + (answers['A5'] || 0);
+        const scoreB = (answers['B1'] || 0) + (answers['B2'] || 0) + (answers['B3'] || 0) +
+                       (answers['B4'] || 0) + (answers['B5'] || 0);
+        const scoreC = (answers['C1'] || 0) + (answers['C2'] || 0) + (answers['C3'] || 0) +
+                       (answers['C4'] || 0) + (answers['C5'] || 0);
+        const scoreD = (answers['D1'] || 0) + (answers['D2'] || 0);
+        const total = scoreA + scoreB + scoreC + scoreD;
+
+        return { scoreA, scoreB, scoreC, scoreD, total };
+    }
+
+    // ============================================================
+    // SHOW RESULT
+    // ============================================================
+    function showResult() {
+        const { scoreA, scoreB, scoreC, scoreD, total } = calculateScores();
+
+        const dogName = document.getElementById('dogName').value || 'สุนัขของคุณ';
+        const dogBreed = document.getElementById('dogBreed').value;
+        const dogAge = document.getElementById('dogAge').value;
+        const ownerName = document.getElementById('ownerName').value;
+        const assessDate = document.getElementById('assessDate').value;
+
+        // Display dog info
+        let dogInfo = dogName;
+        if (dogBreed) dogInfo += ` (${dogBreed})`;
+        if (dogAge) dogInfo += ` อายุ ${dogAge} ปี`;
+        if (ownerName) dogInfo += ` | เจ้าของ: ${ownerName}`;
+        if (assessDate) dogInfo += ` | วันที่: ${assessDate}`;
+
+        document.getElementById('resultDogName').textContent = dogInfo;
+        document.getElementById('totalScoreDisplay').textContent = total;
+
+        // Determine stage
+        let stage, badgeClass, icon, description;
+
+        if (total <= 7) {
+            stage = '✅ Normal Ageing (ปกติตามอายุ)';
+            badgeClass = 'normal';
+            icon = '😊';
+            description = `
+                <h4>ผลการประเมิน: ปกติตามอายุ</h4>
+                <p>สุนัขของคุณมีคะแนน <strong>${total} คะแนน</strong> ซึ่งอยู่ในเกณฑ์ปกติสำหรับสุนัขตามอายุ 
+                พฤติกรรมที่พบอาจเป็นการเปลี่ยนแปลงตามธรรมชาติของอายุที่มากขึ้น 
+                แนะนำให้ดูแลสุขภาพอย่างสม่ำเสมอและตรวจสุขภาพประจำปีกับสัตวแพทย์</p>`;
+        } else if (total <= 23) {
+            stage = '⚠️ Mild Cognitive Impairment (ความบกพร่องระดับน้อย)';
+            badgeClass = 'mild';
+            icon = '🟡';
+            description = `
+                <h4>ผลการประเมิน: ความบกพร่องทางสมองระดับน้อย</h4>
+                <p>สุนัขของคุณมีคะแนน <strong>${total} คะแนน</strong> ซึ่งบ่งชี้ว่าอาจมีความบกพร่องทางสมองระดับเริ่มต้น 
+                <strong>แนะนำให้นำสุนัขไปพบสัตวแพทย์</strong> เพื่อรับการประเมินและวางแผนการดูแลที่เหมาะสม 
+                การดูแลสิ่งแวดล้อมและกิจกรรมกระตุ้นสมองอาจช่วยชะลอการดำเนินโรคได้</p>`;
+        } else if (total <= 44) {
+            stage = '🟠 Moderate Cognitive Impairment (ความบกพร่องระดับปานกลาง)';
+            badgeClass = 'moderate';
+            icon = '🟠';
+            description = `
+                <h4>ผลการประเมิน: ความบกพร่องทางสมองระดับปานกลาง</h4>
+                <p>สุนัขของคุณมีคะแนน <strong>${total} คะแนน</strong> ซึ่งบ่งชี้ถึงความบกพร่องทางสมองในระดับที่ชัดเจน 
+                <strong>ควรพาสุนัขพบสัตวแพทย์โดยเร็ว</strong> เพื่อรับการวินิจฉัยและรักษา 
+                อาจมีการจัดการด้วยยาและการปรับสิ่งแวดล้อมเพื่อคุณภาพชีวิตที่ดีขึ้น</p>`;
+        } else {
+            stage = '🔴 Severe Cognitive Impairment (ความบกพร่องระดับรุนแรง)';
+            badgeClass = 'severe';
+            icon = '🔴';
+            description = `
+                <h4>ผลการประเมิน: ความบกพร่องทางสมองระดับรุนแรง</h4>
+                <p>สุนัขของคุณมีคะแนน <strong>${total} คะแนน</strong> ซึ่งบ่งชี้ถึงความบกพร่องทางสมองระดับรุนแรง 
+                <strong>กรุณานำสุนัขพบสัตวแพทย์ทันที</strong> เพื่อรับการวินิจฉัย การดูแลรักษา 
+                และการประเมินคุณภาพชีวิตอย่างครอบคลุม</p>`;
+        }
+
+        // Update UI
+        document.getElementById('resultIcon').textContent = icon;
+        document.getElementById('resultBadge').textContent = stage;
+        document.getElementById('resultBadge').className = 'result-badge ' + badgeClass;
+        document.getElementById('resultDescription').innerHTML = description;
+
+        // Score breakdown bars
+        document.getElementById('scoreA').textContent = `${scoreA}/25`;
+        document.getElementById('scoreB').textContent = `${scoreB}/25`;
+        document.getElementById('scoreC').textContent = `${scoreC}/25`;
+        document.getElementById('scoreD').textContent = `${scoreD}/20`;
+
+        document.getElementById('barA').style.width = (scoreA / 25 * 100) + '%';
+        document.getElementById('barB').style.width = (scoreB / 25 * 100) + '%';
+        document.getElementById('barC').style.width = (scoreC / 25 * 100) + '%';
+        document.getElementById('barD').style.width = (scoreD / 20 * 100) + '%';
+
+        // Highlight current stage
+        document.querySelectorAll('.stage-item').forEach(el => el.classList.remove('current'));
+        if (total <= 7) document.getElementById('stageNormal').classList.add('current');
+        else if (total <= 23) document.getElementById('stageMild').classList.add('current');
+        else if (total <= 44) document.getElementById('stageModerate').classList.add('current');
+        else document.getElementById('stageSevere').classList.add('current');
+
+        // Show result
+        document.getElementById('resultSection').classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ============================================================
+    // RESTART
+    // ============================================================
+    function restartApp() {
+        answers = {};
+
+        // Clear all radio buttons
+        document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+
+        // Clear answered classes
+        document.querySelectorAll('.question-card').forEach(c => {
+            c.classList.remove('answered');
+            c.style.borderColor = '';
+            c.style.background = '';
+        });
+
+        // Clear dog info
+        document.getElementById('dogName').value = '';
+        document.getElementById('dogBreed').value = '';
+        document.getElementById('dogAge').value = '';
+        document.getElementById('dogSex').value = '';
+        document.getElementById('ownerName').value = '';
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('assessDate').value = today;
+
+        // Reset progress
+        document.getElementById('progressContainer').style.display = 'block';
+
+        goToStep(0);
+    }
+
+    // Initialize
+    updateProgress(0);
+</script>
+
+</body>
+</html>
